@@ -145,7 +145,7 @@ public class PollService {
         poll.setQuestion(pollRequest.getQuestion());
 
         pollRequest.getChoices().forEach(choiceRequest -> {
-            poll.addChoice(new VoterChoice(choiceRequest.getText()));
+            poll.addChoice(new Choice(choiceRequest.getText()));
         });
 
         Instant now = Instant.now();
@@ -172,7 +172,7 @@ public class PollService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", poll.getCreatedBy()));
 
         // Retrieve vote done by logged in user
-        Voter userVote = null;
+        Vote userVote = null;
         if(currentUser != null) {
             userVote = voteRepository.findByUserIdAndPollId(currentUser.getId(), pollId);
         }
@@ -191,12 +191,12 @@ public class PollService {
 
         User user = userRepository.getOne(currentUser.getId());
 
-        VoterChoice selectedChoice = poll.getChoices().stream()
+        Choice selectedChoice = poll.getChoices().stream()
                 .filter(choice -> choice.getId().equals(voteRequest.getChoiceId()))
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Choice", "id", voteRequest.getChoiceId()));
 
-        Voter vote = new Voter();
+        Vote vote = new Vote();
         vote.setPoll(poll);
         vote.setUser(user);
         vote.setChoice(selectedChoice);
@@ -245,10 +245,10 @@ public class PollService {
     }
 
     private Map<Long, Long> getPollUserVoteMap(UserPrincipal currentUser, List<Long> pollIds) {
-        // Retrieve Votes done by the logged in user to the given pollIds
+        // Retrieve Vote done by the logged in user to the given pollIds
         Map<Long, Long> pollUserVoteMap = null;
         if(currentUser != null) {
-            List<Voter> userVotes = voteRepository.findByUserIdAndPollIdIn(currentUser.getId(), pollIds);
+            List<Vote> userVotes = voteRepository.findByUserIdAndPollIdIn(currentUser.getId(), pollIds);
 
             pollUserVoteMap = userVotes.stream()
                     .collect(Collectors.toMap(vote -> vote.getPoll().getId(), vote -> vote.getChoice().getId()));

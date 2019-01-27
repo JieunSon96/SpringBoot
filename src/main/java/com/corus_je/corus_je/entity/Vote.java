@@ -5,15 +5,15 @@ import com.corus_je.corus_je.entity.audit.DateAudit;
 
 import javax.persistence.Entity;
 import javax.persistence.*;
-//이건 vote가 아니고 voter임
+
 @Entity
-@Table(name = "voter", uniqueConstraints = {
+@Table(name = "votes", uniqueConstraints = {
         @UniqueConstraint(columnNames = {
                 "poll_id",
                 "user_id"
         })
 })
-public class Voter extends DateAudit {
+public class Vote extends DateAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,7 +24,7 @@ public class Voter extends DateAudit {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "choice_id", nullable = false)
-    private VoterChoice choice;
+    private Choice choice;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
@@ -46,11 +46,11 @@ public class Voter extends DateAudit {
         this.poll = poll;
     }
 
-    public VoterChoice getChoice() {
+    public Choice getChoice() {
         return choice;
     }
 
-    public void setChoice(VoterChoice choice) {
+    public void setChoice(Choice choice) {
         this.choice = choice;
     }
 

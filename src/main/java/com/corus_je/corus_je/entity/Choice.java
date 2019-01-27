@@ -7,8 +7,8 @@ import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
-@Table(name = "voter_choice")
-public class VoterChoice {
+@Table(name = "choices")
+public class Choice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,11 +21,11 @@ public class VoterChoice {
     @JoinColumn(name = "poll_id", nullable = false)
     private Poll poll;
 
-    public VoterChoice() {
+    public Choice() {
 
     }
 
-    public VoterChoice(String text) {
+    public Choice(String text) {
         this.text = text;
     }
 
@@ -57,7 +57,7 @@ public class VoterChoice {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        VoterChoice choice = (VoterChoice) o;
+        Choice choice = (Choice) o;
         return Objects.equals(id, choice.id);
     }
 

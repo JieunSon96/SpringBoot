@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 
@@ -70,7 +71,9 @@ public class PollController {
     @PreAuthorize("hasRole('USER')")
     public PollResponse castVote(@CurrentUser UserPrincipal currentUser,
                                  @PathVariable Long pollId,
-                                 @Valid @RequestBody VoteRequest voteRequest) {
+                                 @Valid @RequestBody VoteRequest voteRequest, HttpServletRequest request) {
+        System.out.println("투표하는곳에 입성!! 누가 입성??> "+request.getUserPrincipal().getName());
+
         return pollService.castVoteAndGetUpdatedPoll(pollId, voteRequest, currentUser);
     }
 }
