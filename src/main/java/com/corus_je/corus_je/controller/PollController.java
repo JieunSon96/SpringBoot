@@ -1,7 +1,6 @@
 package com.corus_je.corus_je.controller;
 
 import com.corus_je.corus_je.entity.Poll;
-import com.corus_je.corus_je.payload.*;
 import com.corus_je.corus_je.repository.PollRepository;
 import com.corus_je.corus_je.repository.UserRepository;
 import com.corus_je.corus_je.repository.VoteRepository;
@@ -9,6 +8,7 @@ import com.corus_je.corus_je.security.CurrentUser;
 import com.corus_je.corus_je.security.UserPrincipal;
 import com.corus_je.corus_je.service.PollService;
 import com.corus_je.corus_je.util.AppConstants;
+import com.corus_je.corus_je.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,6 @@ public class PollController {
         return pollService.getAllPolls(currentUser, page, size);
     }
 
-    //투표 생성 (Create)
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createPoll(@Valid @RequestBody PollRequest pollRequest) {

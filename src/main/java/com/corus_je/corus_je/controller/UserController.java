@@ -1,106 +1,74 @@
 
 package com.corus_je.corus_je.controller;
 
-import com.corus_je.corus_je.entity.Role;
 import com.corus_je.corus_je.entity.User;
-import com.corus_je.corus_je.pojo.UserRegistration;
+import com.corus_je.corus_je.exception.ResourceNotFoundException;
+import com.corus_je.corus_je.repository.RoleRepository;
+import com.corus_je.corus_je.security.JwtTokenProvider;
 import com.corus_je.corus_je.service.UserService;
+import com.corus_je.corus_je.vo.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.net.URI;
-import java.util.Arrays;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/user")
-//로그인, 회원가입, 로그아웃, 연구생성, 수정, 읽기, 삭제
+
 public class UserController {
 
 
     @Autowired
-    private UserService userService;
+    AuthenticationManager authenticationManager;
 
-/*@RequestMapping("/")
-    public String index() {
-        return "index.html";
-    }*/
+    @Autowired
+    RoleRepository roleRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
+    @Autowired
+    JwtTokenProvider tokenProvider;
 
-    //회원가입
-    /*@PostMapping("/register")
-    public String createUsers(@Valid @RequestBody UserRegistration userRegistration) {
-        System.out.println(userRegistration.getUsername() + " / " + userRegistration.getPassword() + " / ");
-
-        //
-        if (!userRegistration.getPassword().equals(userRegistration.getPasswordConfirmation()))
-            return "Error the two passwords do not match";
-        else if (userService.getUserName(userRegistration.getUsername()) != null)
-            return "Error this username already exists";
-
- userService.createUser(new User(userRegistration.getUsername(), userRegistration.getPassword(), Arrays.asList(new Role("USER"), new Role("ACTUATOR"))));
-
-        return "user Created";
+    @Autowired
+    UserService userService;
 
 
-    }*/
-
-
-    //로그인
-    /*@PostMapping("/login")
-    public String login(String username,String password){
-        System.out.println("username : "+ username +"  /pw: "+password);
-        String loginResult=userService.login(username,password);
-        System.out.println("로그인 결과: "+loginResult);
-        if(loginResult.equals("Login Success"))
-        return "board";
-        else return "index";
-    }*/
-
-
-    /*@GetMapping("/users")
+    @GetMapping("/users")
     public List<User> findAllUsers() {
-
-        List<User> students = studentService.findAllStudents();
-
-        return userService.findAllUsers();
-    }*/
-
-    //마이페이지
-    /*@GetMapping("/users/{userId}")
-    @CrossOrigin
-    public ResponseEntity<User> findUserbyId(@PathVariable("userId") Long userId) {
-        User stu = new User();
-        User user = userService.findUserbyId(userId);
-        if (user.getId().equals(userId)) {
-            return new ResponseEntity<User>(user, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
-        }
-
-    }*/
-
-    //로그아웃
-
-/* @GetMapping("logout")
-    public void logout(@RequestParam(value = "access_token")String accessToken){
-        tokenStore.removeAccessToken(tokenStore.readAccessToken(accessToken));
-    }*/
+        List<User> users = userService.getAllUser();
+        return users;
+    }
 
 
+    @GetMapping("/retrieveUser")
+    public ResponseEntity<User> retrieveByUserName(HttpServletRequest request) {
+        User user = userService.findByUserName(request.getUserPrincipal().getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "userId", request.getUserPrincipal().getName()));
+        return new ResponseEntity<User>(user, HttpStatus.OK);
 
-    //그 아이디가 실제 존재하는지 체크 하고 (있음>수정해주고, 없음>다시 없다고 알림창 뛰우며 index로 가고)
-    //404랑, 405, 500 에러 exception도 해주ㄱ
 
-    /*@PutMapping("/users/{userId}")
+    }
+
+    @DeleteMapping("/deleteUser")
+    public ResponseEntity<?> deleteUserbyId(HttpServletRequest request) {
+        User user = userService.findByUserName(request.getUserPrincipal().getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "userId", request.getUserPrincipal().getName()));
+        userService.deleteUserbyId(user);
+        return new ResponseEntity(new ApiResponse(true, user.getUsername()+" User account is removed!"),
+                HttpStatus.OK);
+    }
+
+
+ /*@PutMapping("/users/{userId}")
     public ResponseEntity<User> updateUserbyId(@PathVariable(value = "userId") Long userId, @Valid @RequestBody User userDetails) {
         User stu = userService.findUserbyId(userId);
         if (stu.getId().equals(userId)) {
@@ -111,17 +79,5 @@ public class UserController {
         }
 
 
-    }*/
-
-
-    /*@DeleteMapping("/users/{userId}")
-    public ResponseEntity<Void> removeUserbyId(@PathVariable(value = "userId") Long id) {
-        userService.removeUserbyId(id);
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-    }
-
-    @GetMapping("/getUsername")
-    public String getUsername() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
     }*/
 }

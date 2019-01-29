@@ -1,13 +1,14 @@
 package com.corus_je.corus_je.controller;
 
+
 import com.corus_je.corus_je.entity.Role;
 import com.corus_je.corus_je.entity.RoleNames;
 import com.corus_je.corus_je.entity.User;
 import com.corus_je.corus_je.exception.AppException;
-import com.corus_je.corus_je.payload.ApiResponse;
-import com.corus_je.corus_je.payload.JwtAuthenticationResponse;
-import com.corus_je.corus_je.payload.LoginRequest;
-import com.corus_je.corus_je.payload.SignUpRequest;
+import com.corus_je.corus_je.vo.ApiResponse;
+import com.corus_je.corus_je.vo.JwtAuthenticationResponse;
+import com.corus_je.corus_je.vo.LoginRequest;
+import com.corus_je.corus_je.vo.SignUpRequest;
 import com.corus_je.corus_je.repository.RoleRepository;
 import com.corus_je.corus_je.repository.UserRepository;
 import com.corus_je.corus_je.security.JwtTokenProvider;
@@ -39,10 +40,7 @@ public class AuthController {
 
     @Autowired
     AuthenticationManager authenticationManager;
-
-   /* @Autowired*/
-    /*UserRepository userRepository;*/
-
+    
     @Autowired
     RoleRepository roleRepository;
 
@@ -55,7 +53,7 @@ public class AuthController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/signin")
+    @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
@@ -71,7 +69,7 @@ public class AuthController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         if (userService.existsByUsername(signUpRequest.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
@@ -83,7 +81,6 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
 
-        // Creating user's account
         User user = new User(signUpRequest.getName(), signUpRequest.getUsername(),
                 signUpRequest.getEmail(), signUpRequest.getPassword());
 
@@ -101,5 +98,6 @@ public class AuthController {
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
     }
 }
+
 
 

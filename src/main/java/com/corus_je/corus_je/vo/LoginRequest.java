@@ -1,4 +1,4 @@
-package com.corus_je.corus_je.payload;
+package com.corus_je.corus_je.vo;
 
 import javax.validation.constraints.NotBlank;
 

@@ -1,9 +1,9 @@
 package com.corus_je.corus_je.util;
 import com.corus_je.corus_je.entity.Poll;
 import com.corus_je.corus_je.entity.User;
-import com.corus_je.corus_je.payload.ChoiceResponse;
-import com.corus_je.corus_je.payload.PollResponse;
-import com.corus_je.corus_je.payload.UserSummary;
+import com.corus_je.corus_je.vo.ChoiceResponse;
+import com.corus_je.corus_je.vo.PollResponse;
+import com.corus_je.corus_je.vo.UserSummary;
 
 import java.time.Instant;
 import java.util.List;
